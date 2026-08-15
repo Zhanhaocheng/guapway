@@ -1,0 +1,82 @@
+---
+title: 把这周 X 上的 Grok Bot 收成一份笔记
+date: 2026-08-15
+tags: [learn, work]
+summary: 8 月 11 日发布，X 上吵了一周。产品是什么、谁能用、官方和早期用户怎么说，以及文档里那条不能当安全边界的警告。
+draft: false
+---
+
+这周时间线很短：11 日 [SpaceXAI 发布 Grok Bot](https://x.ai/news/introducing-grok-bot) 早期 beta，12 日 Grok 4.6 跟上。我把官方稿、文档，以及 X 上 [@bot](https://x.com/bot)、[@elonmusk](https://x.com/elonmusk) 和一批早期用户的说法收在一起，只留还能用的部分。
+
+## 它不是又一个聊天框
+
+官方定义很硬：Bot 是可以交真实工作的 AI 同事。它们有一台常驻云电脑（浏览器、文件系统、终端），登录你已经在用的工具和网站，把活干完，只在需要批准时回来。
+
+和「先搭工作流再跑」的产品相反，入口是发消息。官方文档写得很直：创建一个 Bot，把任务、上下文和工具权限交给它，同一条线程可以在桌面和 iOS 间接上。
+
+SpaceXAI 说这东西先是内部原型，销售外呼、营销活动、行政、修 bug 都有人在用，然后才对外开放。竞争对象也被媒体点名：[The Verge](https://www.theverge.com/ai-artificial-intelligence/978666/spacexai-grok-bot-ai-agent-beta-launch) 把它放在 ChatGPT Work、Claude Cowork、Copilot Tasks 同一条赛道上。
+
+## 官方账号这周说了什么
+
+[@bot](https://x.com/bot) 11 日发的发布帖几乎被所有报道引用：
+
+> Introducing Grok Bot, now in early beta. Bots are AI teammates that do real work for you. They sign in to your tools, use them just like you do, and come back with finished work.
+
+同一天 Elon Musk 在 X 上把预期说死了：先修 early beta 的基础问题，本周放出 Grok 4.6，然后再扩大 beta。12 日模型确实跟上了。TechTimes 等报道写：Grok 4.6 按长程 agent 训，给 Grok Bot 这种「多步、自校验、一直跑」的活用。
+
+Cursor 论坛的[官方帖](https://forum.cursor.com/t/introducing-grok-bot/168053)补了产品层的三句话：有自己的电脑；Bot 之间能互相传上下文和所有权；你做一遍，它存成 routine，之后按需或按日程重跑。
+
+## X 上早期用户在吵什么
+
+热度主要来自一批拿到 extra access 的人，不是全网实测。几条被反复转的：
+
+- [Lenny Rachitsky](https://x.com/lennysan)：一段时间没对新产品这么兴奋。像 OpenClaw，但更简单、更稳、没那么吓人。他认为这会是 Cursor / Grok / SpaceX 的一条大产品线。
+- [Matt Shumer](https://x.com/mattshumer_)：测了几周。一句话是「不只是写代码的 agent」。界面像 iMessage，每个 Bot 有岗位，会按你的工作方式变好。他试过 researcher + writer，再加一个 Chief of Staff 去协调，说 out of the box 就能跑。批评也很具体：底层模型不能自己选，全靠后端路由，早期路由不好，后来被告知改过了。
+- [Ben Lang](https://x.com/benln)：用了几周，工作和个人都在用。最让他意外的是内部扩散速度，「从没见过这样」。
+- [Krista Letz](https://x.com/kristaletz)（Cursor 内部）：能把活交给「带着电脑的 agent」，是她在 Cursor 最强的工作方式。
+- [Shane](https://x.com/shaneapollo)：自己已经在跑一支小团队——chief of staff、origin、outbound、personal。
+- [Wes Bos](https://x.com/wesbos)：看起来就是 Cursor 那套云 VM，Chrome + 终端，权限偏松。
+- [Alex Volkov](https://x.com/altryne)：设置里幻觉出一个模型选择器，点进去还说藏在 “elon only” 设置里。这和 Shumer 说的「用户选不了模型」对得上。
+
+也有反向声音。[Furqan Rydhan](https://x.com/furqanr) 直接写：新实验室发布套路是给一批评论员 extra access，时间线被好评刷满，产品未必真有人用。Hiten Shah 回了一句：他理解这种疲劳，但不把这次放进那个桶里。
+
+读这些帖子时，我只当「早期用户叙事」，不当评测。真正要验证的，是它能不能在 SpaceXAI 自己的 CRM / Gmail 流程之外，把活交到目的地工具里。
+
+## 谁现在能用
+
+Grok Bot 不单独卖，挂在三个已有套餐上：
+
+| 套餐 | 大致价格 | 谁适合 |
+| --- | --- | --- |
+| Cursor Teams Premium | $120 / 席 / 月 | 团队，含集中账单、SAML/OIDC |
+| Cursor Ultra | $200 / 月 | 个人，含 Bot 电脑、例行任务、更高额度 |
+| SuperGrok Heavy | $300 / 月 | 已有 Grok 顶配的人 |
+
+平台：官方写 desktop + iOS；多家媒体补了 macOS / Windows / Linux。Android 和完整企业版都还在路上，企业先走 waitlist。
+
+X 上也有人发「一周免费试用」截图。以官网和 Cursor 账号设置为准，别只信转发图。
+
+## 文档里比发布视频更重要的一句
+
+[官方 overview](https://docs.x.ai/grok-bot/overview) 写得很清楚：你名下所有 Bot **共用一台**云电脑。文件、浏览器登录态、命令行凭证都在这一层，不在单个 Bot 上。屏幕是分开的工作面，不是分开的安全边界。
+
+安全文档原话是：
+
+> Do not use separate Bots as a security boundary.
+
+翻译成人话：你给「邮件 Bot」登了邮箱，再给「CRM Bot」登了后台，它们并没有互相隔离。审批管的是「下一步准不准做」，**撤不回已经做完的事**。密码、验证码、支付确认，文档要求你自己接管电脑，不要丢进普通对话。
+
+所以这周我留下的不是「它能 24/7 干活」，而是一条更窄的规则：
+
+```txt
+先当一台共享电脑，再当一支团队。
+登录态按账号隔离，不按 Bot 名字隔离。
+```
+
+## 这周我怎么看
+
+产品形状是清楚的：从「回答问题」挪到「在真实工具里收尾」。X 上的兴奋点也集中在这里——不用先画自动化，发一条消息就能交活；多个 Bot 能互相当路由。
+
+没看清的是可靠性、用量上限，以及共享电脑在碰到恶意页面、错误权限时会怎样。官方自己也建议：有 connector 就用 connector，点网页当退路；先只读、先出草稿，发送 / 付款 / 删数据 / 改生产都卡在审批后面。
+
+我还没把账号交给它。这篇只是把 8 月 11 日到 15 日能核对的资讯收成一份笔记。要跟原帖，从 [@bot](https://x.com/bot) 的发布帖往下翻；要跟产品，看 [x.ai 的发布稿](https://x.ai/news/introducing-grok-bot) 和 [安全文档](https://docs.x.ai/grok-bot/approvals-security-and-privacy)。
