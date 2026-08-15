@@ -1,19 +1,38 @@
+const FALLBACK_SITE_URL = "https://guapway-iota.vercel.app";
+const RETIRED_SITE_HOSTS = new Set(["guapway.vercel.app"]);
+
 function withHttps(host: string) {
   if (host.startsWith("http://") || host.startsWith("https://")) return host;
   return `https://${host}`;
 }
 
+function normalizeSiteUrl(host: string) {
+  return withHttps(host).replace(/\/$/, "");
+}
+
+function isUsableSiteUrl(host: string) {
+  try {
+    const url = new URL(normalizeSiteUrl(host));
+    return !RETIRED_SITE_HOSTS.has(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function resolveSiteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicit) return withHttps(explicit).replace(/\/$/, "");
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+    FALLBACK_SITE_URL,
+  ];
 
-  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
-  if (production) return withHttps(production).replace(/\/$/, "");
+  for (const candidate of candidates) {
+    const value = candidate?.trim();
+    if (value && isUsableSiteUrl(value)) return normalizeSiteUrl(value);
+  }
 
-  const preview = process.env.VERCEL_URL?.trim();
-  if (preview) return withHttps(preview).replace(/\/$/, "");
-
-  return "https://guapway.vercel.app";
+  return FALLBACK_SITE_URL;
 }
 
 export const site = {
