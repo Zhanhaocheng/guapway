@@ -25,11 +25,26 @@ function parseTags(value: unknown): Tag[] {
   return value.filter((item): item is Tag => typeof item === "string" && isTag(item));
 }
 
+function toDateString(value: unknown): string {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    const day = /^\d{4}-\d{2}-\d{2}/.exec(trimmed);
+    if (day) return day[0];
+  }
+
+  // YAML `date: 2026-08-15` is parsed as a Date, not a string.
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  return "1970-01-01";
+}
+
 function toMeta(slug: string, data: Record<string, unknown>): PostMeta {
   return {
     slug,
     title: typeof data.title === "string" ? data.title : slug,
-    date: typeof data.date === "string" ? data.date : "1970-01-01",
+    date: toDateString(data.date),
     tags: parseTags(data.tags),
     summary: typeof data.summary === "string" ? data.summary : "",
     draft: data.draft === true,
@@ -93,5 +108,6 @@ export function formatDate(date: string) {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date(`${date}T00:00:00`));
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
 }
