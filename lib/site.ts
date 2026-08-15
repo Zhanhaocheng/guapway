@@ -1,8 +1,26 @@
+function withHttps(host: string) {
+  if (host.startsWith("http://") || host.startsWith("https://")) return host;
+  return `https://${host}`;
+}
+
+function resolveSiteUrl() {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return withHttps(explicit).replace(/\/$/, "");
+
+  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (production) return withHttps(production).replace(/\/$/, "");
+
+  const preview = process.env.VERCEL_URL?.trim();
+  if (preview) return withHttps(preview).replace(/\/$/, "");
+
+  return "https://guapway.vercel.app";
+}
+
 export const site = {
   name: "guapway",
   title: "guapway",
   description: "生活 / 工作 / 学习 — 锐利记录",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://guapway.vercel.app",
+  url: resolveSiteUrl(),
   author: "guapway",
 } as const;
 
