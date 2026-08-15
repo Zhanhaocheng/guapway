@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --orange: #ff4d00;
+  --orange-dim: color-mix(in srgb, var(--orange) 18%, transparent);
+  --line: #222222;
+  --muted: #8a8a8a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-orange: var(--orange);
+  --color-orange-dim: var(--orange-dim);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-geist-sans), "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  min-height: 100%;
+}
+
+::selection {
+  background: var(--orange);
+  color: #0a0a0a;
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.scanlines::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.18) 3px
+  );
+  opacity: 0.28;
+}
+
+.hero-fallback {
+  background-image:
+    linear-gradient(to right, rgb(255 77 0 / 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 77 0 / 0.16) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.mdx > * + * {
+  margin-top: 1.15rem;
+}
+
+.mdx h2,
+.mdx h3 {
+  scroll-margin-top: 6rem;
+  font-family: var(--font-mono);
+  letter-spacing: -0.03em;
+}
+
+.mdx h2 {
+  margin-top: 2.4rem;
+  border-left: 2px solid var(--orange);
+  padding-left: 0.75rem;
+  font-size: 1.25rem;
+}
+
+.mdx h3 {
+  margin-top: 1.8rem;
+  font-size: 1.05rem;
+  color: var(--orange);
+}
+
+.mdx p,
+.mdx li {
+  color: #d4d4d4;
+  line-height: 1.8;
+}
+
+.mdx a {
+  color: var(--orange);
+  text-underline-offset: 3px;
+}
+
+.mdx a:hover {
+  text-decoration: underline;
+}
+
+.mdx ul,
+.mdx ol {
+  padding-left: 1.2rem;
+}
+
+.mdx ul {
+  list-style: square;
+}
+
+.mdx ol {
+  list-style: decimal;
+}
+
+.mdx blockquote {
+  border-left: 2px solid var(--orange);
+  padding-left: 1rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+}
+
+.mdx hr {
+  border-color: var(--line);
+}
+
+.mdx code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--orange);
+  background: var(--orange-dim);
+  padding: 0.1rem 0.3rem;
+}
+
+.mdx pre {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: #050505;
+  padding: 1rem 1.1rem;
+}
+
+.mdx pre code {
+  background: transparent;
+  padding: 0;
+  color: #f3f3f3;
+}
+
+.mdx table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.mdx th,
+.mdx td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
