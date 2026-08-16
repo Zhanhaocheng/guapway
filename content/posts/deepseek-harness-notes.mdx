@@ -1,0 +1,81 @@
+---
+title: 把 DeepSeek Harness 收成一份笔记
+date: "2026-08-16"
+tags: [learn, work]
+summary: 8 月 13 日开源的不是新模型，是一层套子。Everything is a plugin；本地 Web UI 不等于本地推理。developer preview，先当实验，不当生产底座。
+draft: false
+---
+
+这周时间线很短：13 日 DeepSeek 把 [DeepSeek Harness](https://deepseek.com/harness/en/) 放进 developer preview，源码在 [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/DeepSeek-Harness)，MIT 许可。口号就一句：Everything is a plugin。
+
+名字容易糊。它不是 DeepSeek V4，也不是又一个聊天框。官方公式写在首页上：
+
+> Agent = Model + Harness
+
+模型是灵魂。Harness 让 agent 认环境、用工具、在真实目录里把活做完。这层东西，Claude Code、Codex、Grok Build 各自都有一份；DeepSeek 这次是把**自己的那份套子**开源，并做成可拆的插件运行时。
+
+这篇只整理 8 月 13 日到 16 日能核对的公开材料，不是评测。
+
+## 它实际是什么
+
+命令行叫 `dsh`。装好 Node.js 之后：
+
+```sh
+npx @deepseek-ai/dsh web
+```
+
+默认打开本机 `http://127.0.0.1:3080`。从源码跑则是 clone 仓库，`pnpm install && pnpm run build`，再 `pnpm dsh web`。
+
+本机 UI **不等于**本机推理。默认 DeepSeek 线路要走 API、要密钥。界面在你电脑上，权重仍在对面。
+
+底层是 [Cordis](https://github.com/cordiverse/cordis)。插件负责模型、工具、skills、session、沙箱、存储、循环、调度和 UI。文档原话：没有一块「特权核心」要去改，扩展就是再挂一个插件。配置能换能力，不必改 Harness 源码。
+
+官方还强调另一句：Every run is traceable。模型看见的东西写进只追加的 session 日志——系统提示、推理、工具调用和结果、子 agent 调度、每一次往上下文里塞的东西。Trajectory 视图按来源翻这些记录，resume / fork / 搜索 / 回放走同一条事件流。
+
+## 四种预设，不是四个产品
+
+官网和 [The New Stack](https://thenewstack.io/deepseek-harness-open-source-plugins/) 对得上，出厂四个 mode：
+
+| 模式 | 干什么 |
+| --- | --- |
+| Standard | 完整编码 agent：改文件、shell、文件和网页搜索、skills、规划、目标、subagent、工作流 |
+| Code | Standard 的能力都在，工具改走 Code Mode SDK，模型用一段 TypeScript 把多步编排进一次调用 |
+| Minimal | 只留 `bash` 和 `str_replace_editor`，给评测用的薄环境 |
+| Creator | 在 Standard 之上加运行时检查、内存里试插件、拼新预设 |
+
+Code mode 的点很具体：本来五轮工具往返，收成模型写一段程序。Minimal 则是反过来——把套子剥到几乎只剩壳，用来量模型自己，而不是量套子有多厚。
+
+[The Register](https://www.theregister.com/ai-and-ml/2026/08/14/deepseeks-innovative-harness-treats-everything-as-a-plug-in/5288095) 补了一句行业常识：同一模型换套子，成绩和成本会差一截。Pi 的系统提示大约 200 token，Claude Code 曾经到过约 1 万。所以「V4 强不强」和「在哪套 harness 里跑」是两道题。
+
+## 和 Claude Code、Grok Build 不在同一层
+
+这周对比帖很多，层要先认清。
+
+Claude Code、Codex、Grok Build 是**已经装好的编码 agent**：打开就能干活，扩展多半从外面挂。DeepSeek Harness 是**做套子的框架**：模型适配、工具表、循环、持久化、策略、预设、界面都是插件。两者都能跑编码流程，给你的控制权不一样。
+
+The New Stack 还写了几条容易漏的：
+
+- 不绑死 DeepSeek 模型。目录里有 Anthropic、OpenAI、Bedrock、Azure、Google（文档里还写着 Vertex），以及自定义 OpenAI 兼容网关。
+- 自带两个关掉的 subagent provider，能把活交给本机 PATH 上的 Claude Code / Codex 二进制，安装和登录你自己管。
+- 有 MCP 客户端和 Agent Client Protocol，会读 `AGENTS.md`、`CLAUDE.md`。
+- 仓库暂时不收外部 PR，贡献走 Discussions，或自己做插件。
+
+还有一个同名干扰：GitHub 上另有独立项目，也叫 deepseek-harness，做的是 V4 协议适配。官方仓库是 `deepseek-ai/deepseek-harness`，包名是 `@deepseek-ai/dsh`。装错包，讨论会从一开始就歪。
+
+## 这周我留下的判断
+
+GitHub 星涨得很快，13 日几个小时就过 3 万。热度说明开发者在找「能换模型、能换循环、能自托管」的那一层，不说明它已经能替班。
+
+README 用大写警告：THERE WILL BE COMPATIBILITY-BREAKING CHANGES。Creator mode 被写成能检查运行时、在内存里拼插件——atoms.dev 提醒，生成出来的组合可能影响后续 session，先当高权限实验壳，不当普通聊天。
+
+所以这周我不会拿它换掉日常的 Cursor / Claude Code / Grok Build。更合适的用法是：同一道题，分别在 Standard 和 Minimal 里跑一遍，看成绩差在套子还是差在模型；或者拿它试一条公司网关、一个自托管端点。要钉生产工作流，等第一版稳定声明。
+
+一条可以留着的规则：
+
+```txt
+先认层：模型是灵魂，harness 是套子。
+dsh 是开源的套子，不是新的 DeepSeek。
+本地 UI 不等于本地推理；preview 不当生产底座。
+```
+
+要跟原文，看 [deepseek.com/harness](https://deepseek.com/harness/en/) 和仓库 README。套子还会再改。下一篇如果要写，只补一件事：同一模型在 Minimal 和 Standard 里，到底差在哪。
